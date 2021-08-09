@@ -1,0 +1,149 @@
+{% extends 'admin/base.html' %}
+{%load static%}
+{%load humanize%}
+{%block styles%}
+{%endblock styles%}
+{%block content%}
+<div class="pcoded-content">
+    <!-- Page-header start -->
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">{%for member in chat.members.all%}{%if member.is_regularuser%}{{member}}{%endif%}{%endfor%}</h5>
+                        <p class="m-b-0">Your chat with {%for member in chat.members.all%}{%if member.is_regularuser%}{{member}}{%endif%}{%endfor%}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'home'%}"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'admin_dashboard' request.user.username%}">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'admin_messages' request.user.username%}">Messages</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ request.get_full_path }}">Chat</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-header end -->
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+                <div class="page-body">
+                    <div class="row">
+                        <div class="col-xl-12 col-md-12">
+                            <div class="card table-card">
+                                <div class="card-header">
+                                    <h5>{%for member in chat.members.all%}{%if member.is_regularuser%}{{member}}{%endif%}{%endfor%}</h5>
+                                </div>
+                                <div class="card-body row rounded-lg  shadow">
+                                    <!-- Chat Box-->
+                                    <div class="w-100">
+                                        <div class="chat-box bg-white" id="messages">
+                                            {%for message in messages%}
+                                            <!-- Sender Message-->
+                                            {%if message.author.is_regularuser %}
+                                            <div class="media w-50 mb-3"><img
+                                                    src="https://ui-avatars.com/api/?name={{message.author.username}}"
+                                                    alt="user" width="50" class="rounded-circle">
+                                                <div class="media-body ml-3">
+                                                    <div class="bg-light rounded py-2 px-3 mb-2">
+                                                        <p class="text-small mb-0 text-muted">{{message.message}}</p>
+                                                    </div>
+                                                    <p class="small text-muted">{{message.pub_date|naturaltime}}</p>
+                                                </div>
+                                            </div>
+                                            {%else%}
+                                            <!-- Reciever Message-->
+                                            <div class="media w-50 ml-auto mb-3">
+                                                <div class="media-body">
+                                                    <div class="bg-primary rounded py-2 px-3 mb-2">
+                                                        <p class="text-small mb-0 text-white">{{message.message}}</p>
+                                                    </div>
+                                                    <p class="small text-muted">{{message.pub_date|naturaltime}}</p>
+                                                </div>
+                                            </div>
+                                            {%endif%}
+                                            {%endfor%}
+
+
+
+                                        </div>
+
+                                        <!-- Typing area -->
+                                        <form  class="bg-light" id="message_form">
+                                            <div class="input-group">
+                                                <input type="text" placeholder="Type a message"
+                                                       aria-describedby="button-addon2" id="id_input_message"
+                                                       class="form-control rounded-0 border-0 py-4 bg-light" value="">
+                                                <div class="input-group-append">
+                                                    <button id="submit_message" type="submit" class="btn btn-link"><i
+                                                            class="fa fa-paper-plane"></i></button>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"></div>
+        </div>
+    </div>
+</div>
+
+
+{%endblock content%}
+{%block scripts%}
+<script>
+$('html, body').animate({
+    scrollTop: $("#styleSelector").offset().top
+}, 2000);
+$('#message_form').submit(function(e){
+    e.preventDefault();
+    var mess = $('#id_input_message').val();
+    if (mess!=''){
+        $.ajax({
+            method: 'POST',
+            url: '/accounts/reply/',
+            data: {
+              message: mess,
+              admin:'{{request.user.username}}',
+              {%for member in chat.members.all%}
+                  {%if member.is_regularuser%}
+                      username:'{{member.username}}',
+                  {%endif%}
+              {%endfor%}
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            dataType: 'json',
+            success: function (data) {
+              if (data) {
+                  $('#messages').load(document.URL +  ' #messages');
+                  $('#id_input_message').val('');
+                  $('html, body').animate({
+                        scrollTop: $("#styleSelector").offset().top
+                    }, 2000);
+              }
+            }
+        });
+    }
+});
+</script>
+{%endblock scripts%}

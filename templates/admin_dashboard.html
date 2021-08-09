@@ -1,10 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Front Liner Tech -Admin Dashboard</title>
-</head>
-<body>
+{%extends 'admin/base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+<div class="pcoded-content">
+    <!-- Page-header start -->
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Admin Dashboard</h5>
+                        <p class="m-b-0">Welcome to the dashboard, {{request.user.username|title}}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{%url 'home'%}"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item"><a
+                                href="{%url 'admin_dashboard' request.user.username%}">Dashboard</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-header end -->
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+                <div class="page-body">
+                    <div class="row">
+                        <div class="col-xl-6 col-md-12">
+                            <div class="row">
+                                <!-- sale card start -->
 
-</body>
-</html>
+                                <div class="col-md-6">
+                                    <div class="card text-center order-visitor-card">
+                                        <div class="card-block">
+                                            <h6 class="m-b-0">Total Users</h6>
+                                            <h4 class="m-t-15 m-b-15"><i class="fas fa-users m-r-15 text-c-red"></i>{{users.count}}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card text-center order-visitor-card">
+                                        <div class="card-block">
+                                            <h6 class="m-b-0">Online Users</h6>
+                                            <h4 class="m-t-15 m-b-15"><i class="fas fa-user m-r-15 text-c-green"></i>{{online_users|length}}
+                                            </h4>
+
+                                            <p class="m-b-0"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-c-red total-card">
+                                        <div class="card-block">
+                                            <div class="text-left">
+                                                <h4>Ksh. 35000</h4>
+                                                <p class="m-0">Total Amount</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-c-green total-card">
+                                        <div class="card-block">
+                                            <div class="text-left">
+                                                <h4>Ksh. 24000</h4>
+                                                <p class="m-0">System Profit</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card text-center order-visitor-card">
+                                        <div class="card-block">
+                                            <h6 class="m-b-0">Unique Visitors</h6>
+                                            <h4 class="m-t-15 m-b-15"><i class="fa fa-arrow-down m-r-15 text-c-red"></i>652
+                                            </h4>
+                                            <p class="m-b-0">36% From Last 6 Months</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card text-center order-visitor-card">
+                                        <div class="card-block">
+                                            <h6 class="m-b-0">Monthly Earnings</h6>
+                                            <h4 class="m-t-15 m-b-15"><i class="fa fa-arrow-up m-r-15 text-c-green"></i>5963
+                                            </h4>
+                                            <p class="m-b-0">36% From Last 6 Months</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- sale card end -->
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6 col-md-12">
+
+                            <div class="card table-card">
+                                <div class="card-header pt-3 pb-3">
+                                    <h5>Front Liner Coins</h5>
+                                </div>
+                                <div class="card mat-clr-stat-card text-white green mx-4">
+                                    <div class="card-block">
+                                        <div class="row">
+                                            <div class="col-3 text-center bg-c-green">
+                                                <i class="fas fa-coins mat-icon f-20"></i>
+                                            </div>
+                                            <div class="col-9 cst-cont pb-1">
+                                                <h5 class="text-center">Generate Coins</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card table-card">
+                                <div class="card-header">
+                                    <h5>Members</h5>
+                                </div>
+                                <div class="card-block pb-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover m-b-0 without-header">
+                                            <tbody>
+                                            {% for user in users|slice:":6" %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-inline-block align-middle">
+                                                        <img src="https://ui-avatars.com/api/?name={{user.username}}"
+                                                             alt="user image"
+                                                             class="img-radius img-40 align-top m-r-15">
+                                                        <div class="d-inline-block">
+                                                            <h6>{{user.username|title}}</h6>
+                                                            <p class="text-muted m-b-0">
+                                                                {{user.date_joined|naturaltime}}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-right">
+                                                    <h6 class="f-w-700">Ksh. 3500<i
+                                                            class="fas fa-level-up-alt text-c-green m-l-10"></i></h6>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div id="styleSelector"></div>
+        </div>
+    </div>
+</div>
+
+{%endblock content%}
+{%block scripts%}
+<script>
+    $("#referral_generator").on("click", function(){
+        $("#referral_clipboard").html("Generate referral code");
+        $.ajax({
+                url: '/accounts/copy_referral_code/',
+                data: {
+                  'auth': 'authorize'
+                },
+                dataType: 'json',
+                success: function (data) {
+                  if (data.code) {
+                    console.log(data.code);
+                    var code = data.code;
+                    var $temp = $("<input>");
+                    $("body").append($temp);
+                    $temp.val(code).select();
+                    document.execCommand("copy");
+                    $temp.remove();
+                    $("#referral_clipboard").html("<i class='fas fa-copy'></i> Code copied! " + code);
+                    function generator_defaults(){
+                          $("#referral_clipboard").html("Generate referral code");
+                    };
+                    window.setTimeout( generator_defaults, 3000 );
+                  }
+                }
+        });
+    });
+</script>
+{%endblock scripts%}

@@ -1,0 +1,58 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+<div class="pcoded-content">
+    <!-- Page-header start -->
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">Notifications</h5>
+                        <p class="m-b-0">Notifications from your users</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'home'%}"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'admin_dashboard' request.user.username%}">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ request.get_full_path }}">Notifications</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-header end -->
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page body start -->
+                <div class="page-body button-page">
+                    <div class="row">
+                        <!-- bootstrap modal start -->
+                        <div class="col-sm-12">
+                            <!-- Notification card start -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>All Notifications</h5>
+                                </div>
+
+                            </div>
+                            <!-- Notification card end -->
+                        </div>
+                        <!-- Bootstrap modal end -->
+                    </div>
+                </div>
+                <!-- Page body end -->
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock content%}

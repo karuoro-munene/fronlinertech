@@ -1,0 +1,276 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Front Liner Tech -Admin Dashboard</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'admin/pages/waves/css/waves.min.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/pages/waves/css/waves.min.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/icon/themify-icons/themify-icons.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/font-awesome-n.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/font-awesome.min.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/jquery.mCustomScrollbar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400&display=swap" rel="stylesheet">
+    <style>
+      body{
+        font-family: 'Raleway', sans-serif !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="theme-loader">
+        <div class="loader-track">
+            <div class="preloader-wrapper">
+                <div class="spinner-layer spinner-blue">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+                <div class="spinner-layer spinner-red">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+
+                <div class="spinner-layer spinner-yellow">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+
+                <div class="spinner-layer spinner-green">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pre-loader end -->
+    <div id="pcoded" class="pcoded">
+        <div class="pcoded-overlay-box"></div>
+        <div class="pcoded-container navbar-wrapper">
+            <nav class="navbar header-navbar pcoded-header">
+                <div class="navbar-wrapper">
+                    <div class="navbar-logo">
+                        <a class="mobile-menu waves-effect waves-light" id="mobile-collapse" href="#!">
+                            <i class="ti-menu"></i>
+                        </a>
+                        <div class="mobile-search waves-effect waves-light">
+                            <div class="header-search">
+                                <div class="main-search morphsearch-search">
+                                    <div class="input-group">
+                                        <span class="input-group-prepend search-close"><i class="ti-close input-group-text"></i></span>
+                                        <input type="text" class="form-control" placeholder="Enter Keyword">
+                                        <span class="input-group-append search-btn"><i class="ti-search input-group-text"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'admin_dashboard' username=request.user.username%}">
+                            <h5 class="text-center text-bold" >Front Liner Tech</h5>
+                        </a>
+                        <a class="mobile-options waves-effect waves-light">
+                            <i class="ti-more"></i>
+                        </a>
+                    </div>
+                    <div class="navbar-container container-fluid">
+                        <ul class="nav-left">
+                            <li>
+                                <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a></div>
+                            </li>
+                            <li>
+                                <a href="#!" onclick="javascript:toggleFullScreen()" class="waves-effect waves-light">
+                                    <i class="ti-fullscreen"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-right">
+                            <li class="header-notification">
+                                <a href="#!" class="waves-effect waves-light">
+                                    <i class="ti-bell"></i>
+                                    <span class="badge bg-c-red"></span>
+                                </a>
+                                <ul class="show-notification">
+                                    <li>
+                                        <h6>Notifications</h6>
+                                        <label class="label label-danger">New</label>
+                                    </li>
+                                    <li class="waves-effect waves-light">
+                                        <div class="media">
+                                            <img class="d-flex align-self-center img-radius" src="https://ui-avatars.com/api/?name={{request.user.username}}" alt="Generic placeholder image">
+                                            <div class="media-body">
+                                                <h5 class="notification-user">{{request.user.username}}</h5>
+                                                <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
+                                                <span class="notification-time">30 minutes ago</span>
+                                            </div>
+                                        </div>
+                                    </li>
+
+
+                                </ul>
+                            </li>
+                            <li class="user-profile header-notification">
+                                <a href="#!" class="waves-effect waves-light">
+                                    <img src="https://ui-avatars.com/api/?name={{request.user.username}}" class="img-radius" alt="User-Profile-Image">
+                                    <span>{{request.user.username}}</span>
+                                    <i class="ti-angle-down"></i>
+                                </a>
+                                <ul class="show-notification profile-notification">
+                                    <li class="waves-effect waves-light">
+                                        <a href="#!">
+                                            <i class="ti-settings"></i> Settings
+                                        </a>
+                                    </li>
+                                    <li class="waves-effect waves-light">
+                                        <a href="user-profile.html">
+                                            <i class="ti-user"></i> Profile
+                                        </a>
+                                    </li>
+                                    <li class="waves-effect waves-light">
+                                        <a href="email-inbox.html">
+                                            <i class="ti-email"></i> My Messages
+                                        </a>
+                                    </li>
+
+                                    <li class="waves-effect waves-light">
+                                        <a href="{% url 'logout' %}">
+                                            <i class="ti-layout-sidebar-left"></i> Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="pcoded-main-container">
+                <div class="pcoded-wrapper">
+                    <nav class="pcoded-navbar">
+                        <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
+                        <div class="pcoded-inner-navbar main-menu">
+                            <div class="">
+                                <div class="main-menu-header">
+                                    <img class="img-80 img-radius" src="https://ui-avatars.com/api/?name={{request.user.username}}" alt="User-Profile-Image">
+                                    <div class="user-details">
+                                        <span>{{request.user.username}}</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="p-15 p-b-0">
+                                <form class="form-material" method="get" action="{%url 'search_users' request.user.username%}" >
+                                    <div class="form-group form-primary">
+                                        <input type="text" name="search_users" class="form-control">
+                                        <span class="form-bar"></span>
+                                        <label class="float-label"><i class="fa fa-search m-r-10"></i>Search a user</label>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="pcoded-navigation-label">Navigation</div>
+                            <ul class="pcoded-item pcoded-left-item">
+                                <li class="{%if not 'messages' in request.path and not 'notifications' in request.path and not 'user_management' in request.path and not 'settings' in request.path%} active {%endif%}">
+                                    <a href="{% url 'admin_dashboard' request.user.username %}" class="waves-effect waves-dark ">
+                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Dashboard</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="{%if 'notifications' in request.path %} active {%endif%}">
+                                    <a href="{% url 'admin_notifications' request.user.username %}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="ti-bell"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Notifications</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="{%if 'messages' in request.path %} active {%endif%}">
+                                    <a href="{% url 'admin_messages' request.user.username %}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="ti-email"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Messages</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="{%if 'user_management' in request.path %} active {%endif%}">
+                                    <a href="{% url 'user_management' request.user.username %}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="far fa-user"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">User Management</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="{%if 'settings' in request.path %} active {%endif%}">
+                                    <a href="{% url 'admin_settings' request.user.username %}" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="ti-settings"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Settings</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a href="{% url 'logout' %}?next=/accounts/signin" class="waves-effect waves-dark">
+                                        <span class="pcoded-micon"><i class="ti-layout-sidebar-left"></i><b>D</b></span>
+                                        <span class="pcoded-mtext">Logout</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </nav>
+                {%block content%}
+                {%endblock content%}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'admin/js/jquery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/popper.js/popper.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/pages/waves/js/waves.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/jquery-slimscroll/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'admin/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+    <script src="{% static 'admin/js/pcoded.min.js' %}"></script>
+    <script src="{% static 'admin/js/vertical/vertical-layout.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/script.js' %}"></script>
+    {%block scripts%}
+    {%endblock scripts%}
+</body>
+</html>

@@ -1,0 +1,240 @@
+{%extends 'users/base.html'%}
+{%load static%}
+{%load humanize%}
+{%block styles%}
+<style>
+    color1{
+        background-color:#5ded95!important;
+    }
+    color2{
+        background-color:#77d68d!important;
+        }
+    color3{
+        background-color:#90bf84!important;
+        }
+    color4{
+        background-color:#aaa87c!important;
+        }
+    color5{
+        background-color:#c39274!important;
+        }
+    color6{
+        background-color:#dd7b6b!important;
+        }
+    color7{
+        background-color:#f66463!important;
+        }
+    .action-grid {
+
+        }
+
+</style>
+
+{%endblock styles%}
+{%block content%}
+<main>
+    <div class="container-fluid px-4">
+        <h5 class="mt-4 pb-4 text-primary">User Dashboard</h5>
+        <div class="row mx-auto" id="alerts">
+        </div>
+        <div class="row">
+            <div class="col-xl-12 col-md-12">
+                <div class="card border-primary">
+                    <div class="card-header  border-primary text-bold text-primary" style="font-weight:bold" ><i class="fas fa-tasks"></i> &nbsp; Actions</div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="pb-2"><button id="copy_referral" type="button" class="btn text-white btn-primary btn-sm btn-block"style="width:150px"
+                        ><i class="fa fa-copy"></i> Copy Referral</button></div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="pb-2"><button type="button" class="btn text-white btn-primary btn-sm btn-block"style="width:150px"
+                        data-bs-toggle="modal" data-bs-target="#chat-admin"><i class="fa fa-envelope"></i> Chat Admin</button></div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="pb-2"><button type="button" class="btn text-white btn-primary btn-sm btn-block"style="width:150px"
+                        ><i class="fas fa-hand-holding-usd"></i> Cash Out</button></div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="pb-2"><button type="button" class="btn text-white btn-primary btn-sm btn-block" style="width:150px"
+                        ><i class="fas fa-toggle-on"></i> Activate Account</button></div>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-4">
+            <div class="col-xl-12 col-md-12">
+                <div class="color1 card  text-black mb-4 border-primary" style="font-weight:bold">
+                    <div class="card-header border-primary text-primary"><i class="fas fa-coins"></i> &nbsp; Coins
+                    <span style="float:right;font-weight:normal">You have <span style="font-weight:bold">29</span> coins</span>
+                    </div>
+                    <div class="card-body"  style="font-weight:bold">
+                        <div class="row text-center">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="pb-2"><button type="button" class="btn text-white btn-primary btn-sm btn-block"style="width:150px"
+                                    ><i class="fa fa-arrow-down"></i> Buy Coins</button>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="pb-2"><button type="button" class="btn text-white btn-primary btn-sm btn-block"style="width:150px"
+                                    ><i class="fa fa-arrow-up"></i> Sell Coins</button></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row pt-3">
+            <div class="col-xl-3 col-md-6">
+                <div class="color1 card  text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body"  style="font-weight:bold">Active Referees <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/user.png'%}">
+                        <p>{{referral_responses.count}}</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body" style="font-weight:bold">Direct Earnings (Ksh) <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body" style="font-weight:bold">Spill Earnings (Ksh) <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body" style="font-weight:bold">Pending Spills (Ksh) <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body" style="font-weight:bold">Pending Cashout (Ksh) <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body" style="font-weight:bold">Settled Cashout <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#FF580A!important">
+                    <div class="card-body" style="font-weight:bold">Total Balance <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Chat Admin Modal -->
+<div class="modal fade" id="chat-admin" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="border:none">
+        <h6 class="modal-title text-bold" style="font-weight:bold">Message Admin</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form class="modal-body"  style="border:none">
+          <textarea class="form-control" autofocus="autofocus" rows="5" id="id_textarea_message"></textarea>
+      </form>
+      <div class="modal-footer"  style="border:none">
+        <button type="button" class="btn btn-primary btn-sm" id="submit_message"><i class="fa fa-paper-plane"></i> Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock content%}
+{%block scripts%}
+<script>
+$('#copy_referral').click(function(){
+    var code = '{{profile.referral.url}}';
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(code).select();
+    document.execCommand("copy");
+    $temp.remove();
+    $('#copy_referral').html("<i class='fas fa-copy'></i> Code copied! ");
+    function copy_referral_defaults(){
+          $('#copy_referral').html("<i class='fas fa-copy'></i> Copy Referral");
+    };
+    window.setTimeout( copy_referral_defaults, 3000 );
+});
+$('#chat-admin').on('shown.bs.modal', function () {
+    $('#id_textarea_message').focus();
+})
+$('#submit_message').click(function(){
+    var mess = $('#id_textarea_message').val();
+    if (mess!=''){
+        $.ajax({
+            method: 'POST',
+            url: '/accounts/chat/',
+            data: {
+              message: mess,
+              username:'{{request.user.username}}',
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            dataType: 'json',
+            success: function (data) {
+              if (data) {
+                  console.log(data.sent);
+                  $('#chat-admin').modal('hide');
+                  $('#id_textarea_message').val('');
+                  $('#alerts').append('<div class="message-sent alert alert-success alert-dismissible fade show" id="message{{data.message_id}}" role="alert"><strong>Message sent to Admin!</strong></button></div>');
+                  setTimeout(function () {
+                        $('.message-sent').slideUp(500);
+                  }, 3000);
+
+
+              }
+            }
+        });
+    }
+});
+</script>
+{%endblock scripts%}

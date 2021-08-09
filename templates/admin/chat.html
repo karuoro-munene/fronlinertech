@@ -1,0 +1,15 @@
+{%extends 'users/base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+<form method="POST" class="container mx-auto my-auto">
+    {%csrf_token%}
+    <textarea class="form-control " name="message" rows="3"></textarea>
+    <button type="submit" class="btn">submit</button>
+</form>
+{%for message in messages%}
+<p>{{message}}</p>
+{%endfor%}
+{%endblock content%}
+{%block scripts%}
+{%endblock scripts%}

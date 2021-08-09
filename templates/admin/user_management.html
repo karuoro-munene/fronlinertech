@@ -1,0 +1,137 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+<div class="pcoded-content">
+    <!-- Page-header start -->
+    <div class="page-header">
+        <div class="page-block">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="page-header-title">
+                        <h5 class="m-b-10">User Management</h5>
+                        <p class="m-b-0">Manage your users from this page</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'home'%}"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'admin_dashboard' request.user.username%}">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ request.get_full_path }}">User Management</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-header end -->
+    <div class="pcoded-inner-content">
+        <!-- Main-body start -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- Page-body start -->
+                <div class="page-body">
+                    <div class="card table-card">
+                        <div class="card-header">
+                            <h5>All Front Liner Users</h5>
+                        </div>
+                        <div class="card-block">
+                            <div class="table-responsive">
+                                <table class="table table-hover m-b-0 without-header">
+                                    <tbody>
+                                    {%for user in users%}
+                                        {%if user.is_regularuser%}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-inline-block align-middle">
+                                                        <img src="https://ui-avatars.com/api/?name={{user.username}}" alt="user image"
+                                                             class="img-radius img-40 align-top m-r-15">
+                                                        <div class="d-inline-block">
+                                                            <h6>{{user.username}}</h6>
+                                                            <p class="text-muted m-b-0">
+                                                                {{user.date_joined}}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-sm btn-success waves-effect waves-light approve_user">Approve User</button>
+                                                    <input type="hidden" value="{{user.id}}">
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-sm btn-warning waves-effect waves-light">Warning Button</button>
+                                                    <input type="hidden" value="{{user.id}}">
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-sm btn-danger waves-effect waves-light delete_user">Delete User</button>
+                                                    <input type="hidden" value="{{user.id}}">
+                                                </td>
+                                            </tr>
+                                        {%endif%}
+                                    {%endfor%}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Page-body end -->
+            </div>
+            <div id="styleSelector"></div>
+        </div>
+    </div>
+</div>
+<!--Delete User Modal-->
+<div class="modal fade" id="delete_user_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body card">
+                <div class="card-header">
+                    <h5 class="text-danger">Are you sure?</h5>
+                </div>
+                <div class="card-block">
+                        <button id="confirm_delete" class="float-left btn waves-effect waves-light btn-outline-danger btn-danger"><i class="icofont icofont-garbage"></i>Delete</button>
+                        <button class="float-right btn waves-effect waves-light btn-primary btn-outline-primary" data-dismiss="modal"><i class="icofont icofont-error"></i>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock content%}
+{%block scripts%}
+<script>
+$(".delete_user").on("click", function () {
+    var val = $(this).closest("td").find("input").val();
+    var row = $(this).closest("tr");
+    console.log(val);
+    $('#delete_user_modal').modal('show');
+    $('#delete_user_modal').on('shown.bs.modal', function(){
+        $("#confirm_delete").on("click", function () {
+            $.ajax({
+                url: '/accounts/delete_users/',
+                data: {
+                  'id': val
+                },
+                dataType: 'json',
+                success: function (data) {
+                  if (data.is_deleted) {
+                    console.log("User successfully deleted!");
+                    $('#delete_user_modal').modal('hide');
+                    row.remove();
+                  }
+
+                }
+            });
+
+        });
+    });
+});
+</script>
+{%endblock scripts%}

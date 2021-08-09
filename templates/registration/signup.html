@@ -1,31 +1,10 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Front Liner Tech - Sign Up</title>
+{%extends 'registration/base.html'%}
+{%load static%}
+{%load humanize%}
+{%block styles%}
+{%endblock styles%}
+{%block content%}
 
-    <!-- Font Icon -->
-    <link rel="stylesheet"
-          href="{% static 'registration/fonts/material-icon/css/material-design-iconic-font.min.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <!-- Main css -->
-    <link rel="stylesheet" href="{% static 'registration/css/style.css' %}">
-    <style>
-        .red{
-        color:red;
-        text-align:right;
-        padding-bottom:0;
-        }
-        .green{
-        color:#00FF00!important;
-        }
-    </style>
-
-</head>
-<body>
 <div class="main">
     <!-- Sign up form -->
     <section class="signup">
@@ -54,6 +33,16 @@
                                    placeholder="Mpesa Number"/>
                         </div>
                         <div class="form-group">
+                            <div class="red"><small id="country_error"></small></div>
+                            <label for="country_select"><i class="fa fa-globe"></i></label>
+                            <select class="country" id="country_select" name="country_select">
+                              <option selected class="select_nationality">Select Nationality</option>
+                              <option value="Kenya">Kenya</option>
+                              <option value="Tanzania">Tanzania</option>
+                            </select>
+                            <input type="hidden" value="" name="country" id="id_country">
+                        </div>
+                        <div class="form-group">
                             <div class="red"><small id="password1_error"></small></div>
                             <label for="id_password1"><i class="zmdi zmdi-lock"></i></label>
                             <input type="password" name="password1" required id="id_password1" placeholder="Password"/>
@@ -68,7 +57,7 @@
                             <div class="red"><small id="terms_error"></small></div>
                             <input type="checkbox" name="agree-term" id="agree-term" class="agree-term"/>
                             <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all
-                                statements in <a href="#" class="term-service">Terms of service</a></label>
+                                statements in <a target="_blank" href="{% url 'terms'%}" class="term-service">Terms of service</a></label>
                         </div>
                         <div class="form-group form-button">
                             <input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
@@ -87,9 +76,9 @@
 
 </div>
 
-<!-- JS -->
-<script src="{% static 'registration/vendor/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'registration/js/main.js' %}"></script>
+{%endblock content%}
+
+{%block scripts%}
 <script>
     $("#id_username").change(function () {
       console.log( $(this).val() );
@@ -114,10 +103,9 @@
           }
         }
       });
-
     });
 
-  </script>
+</script>
 <script>
     function validateEmail($email) {
           var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -192,10 +180,18 @@ var is_checked = $('#agree-term').is(":checked");
         $("#terms_error").html("");
     }
 $( "#register-form" ).submit(function( event ) {
+    var country_selected = $('select[name=country_select] option').filter(':selected').val();
     var is_checked = $('#agree-term').is(":checked");
     if (is_checked){
         $("#terms_error").html("");
-        $( "#register-form" ).submit();
+        if (country_selected == 'Kenya' || country_selected == 'Tanzania'){
+               $( "#id_country" ).val(country_selected);
+               $( "#register-form" ).submit();
+            }
+        else {
+               $('#country_error').html("Select a country first!");
+               event.preventDefault()
+        }
     }
     else{
         $("#terms_error").html("Must agree to terms first!");
@@ -203,7 +199,4 @@ $( "#register-form" ).submit(function( event ) {
     }
 });
 </script>
-
-</body>
-
-</html>
+{%endblock scripts%}
