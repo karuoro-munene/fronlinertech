@@ -1,17 +1,21 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
 from django.contrib.auth import logout, login
 from pinax.referrals.models import Referral, ReferralResponse
-from frontlinerapp.decorators import regularuser_required, adminuser_required
+
+from frontlinerapp.coins import buy_coins_from_admin
+from frontlinerapp.decorators import regularuser_required, adminuser_required, affiliateuser_required, \
+    coinsuser_required, saccouser_required
 from frontlinerapp.forms import SignUpForm
 from django.contrib import messages
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
-from frontlinerapp.models import CustomUser, Profile, Chat, Message
-from frontlinerapp.tasks import implement_signup_money_flow, get_upper_level_referrer
+from frontlinerapp.models import CustomUser, Profile, Chat, Message, UserWallet, Coins, CoinRequests, CoinOffers
+from frontlinerapp.affiliate import implement_signup_money_flow
 
 
 def home(request):
@@ -29,10 +33,14 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
+            country = form.cleaned_data.get('country')
+            program = form.cleaned_data.get('program')
             user = authenticate(username=username, password=raw_password)
             user.is_regularuser = True
+            user.program = program
+            user.country = country
             user.save()
-            return redirect('validate_code', username=user.username)
+            return redirect('signin')
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', locals())
@@ -40,20 +48,14 @@ def signup(request):
 
 @login_required
 @regularuser_required
+@affiliateuser_required
 def user_dashboard(request, username):
     profile = Profile.objects.get(user=request.user)
     referral_responses = ReferralResponse.objects.filter(referral=profile.referral)
-    level_one = get_upper_level_referrer(request.user)
-    level_two = get_upper_level_referrer(level_one)
-    if level_one is not None:
-        profile.one_level_up_user = level_one
-        profile.save()
-    if level_two is not None:
-        profile.two_levels_up_user = level_two
-        profile.save()
-    print("One level up, %s." % level_one)
-    print("Two levels up, %s." % level_two)
-
+    if not request.user.paid_for_signup:
+        implement_signup_money_flow(request.user)
+        request.user.paid_for_signup = True
+        request.user.save()
     return render(request, 'users/index.html', locals())
 
 
@@ -66,7 +68,9 @@ def admin_dashboard(request, username):
         if user.online:
             online_users.append(user)
     print(online_users)
-    return render(request, 'admin_dashboard.html', locals())
+    coins_in_circulation = Coins.objects.filter(~Q(user=None))
+    available_coins = Coins.objects.filter(user=None)
+    return render(request, 'admin/admin_dashboard.html', locals())
 
 
 def signin(request):
@@ -81,13 +85,20 @@ def signin(request):
             try:
                 user = CustomUser.objects.get(username=username)
                 if user.is_regularuser:
-                    if user.first_time_login:
-                        user.first_time_login = False
-                        user.save()
-                        return redirect('paywall', username=user.username)
-                    else:
+                    if user.program == 'Affiliate':
+                        if user.first_time_login:
+                            user.first_time_login = False
+                            user.save()
+                            return redirect('paywall', username=user.username)
+                        else:
+                            login(request, user)
+                            return redirect('user_dashboard', username=user.username)
+                    if user.program == 'Coins':
                         login(request, user)
-                        return redirect('user_dashboard', username=user.username)
+                        return redirect('user_coins', username=user.username)
+                    if user.program == 'Sacco':
+                        login(request, user)
+                        return redirect('user_sacco', username=user.username)
                 else:
                     login(request, user)
                     return redirect('admin_dashboard', username=user.username)
@@ -104,12 +115,6 @@ def validate_username(request):
         'is_taken': CustomUser.objects.filter(username__iexact=username).exists()
     }
     return JsonResponse(data)
-
-
-def validate_code(request, username):
-    if request.method == 'POST':
-        return redirect('signin')
-    return render(request, 'registration/2FA.html', locals())
 
 
 def paywall(request, username):
@@ -140,11 +145,13 @@ def validate_login(request):
 
 
 @regularuser_required
+@affiliateuser_required
 def user_messages(request, username):
     return render(request, 'users/messages.html', locals())
 
 
 @regularuser_required
+@affiliateuser_required
 def user_notifications(request, username):
     return render(request, 'users/notifications.html', locals())
 
@@ -164,7 +171,7 @@ def admin_notifications(request, username):
 @adminuser_required
 def search_users(request, username):
     if 'search_users' in request.GET and request.GET.get('search_users'):
-        user_list = CustomUser.objects.filter(username__icontains = request.GET.get('search_users'))
+        user_list = CustomUser.objects.filter(username__icontains=request.GET.get('search_users'))
         print(user_list)
     return render(request, 'admin/search_users.html', locals())
 
@@ -191,7 +198,7 @@ def delete_users(request):
         pass
     data = {
         'is_deleted': is_deleted
-        }
+    }
     return JsonResponse(data)
 
 
@@ -228,7 +235,7 @@ def reply_admin(request):
         message = Message.objects.create(author=author, message=message, chat=chat)
         message.save()
         chat.save()
-        data = {'sent': 'Message sent to '+ other.username, 'message_id': message.id}
+        data = {'sent': 'Message sent to ' + other.username, 'message_id': message.id}
 
         return JsonResponse(data)
 
@@ -246,7 +253,113 @@ def get_latest_message(request):
     message = Message.objects.filter(chat=chat).order_by('-id')[0]
     data = {
         'id': message.id,
-        'message':message.message,
+        'message': message.message,
         'date': naturaltime(message.pub_date)
     }
+    return JsonResponse(data)
+
+
+@coinsuser_required
+def user_coins(request, username):
+    my_coins = Coins.objects.filter(user=request.user)
+    return render(request, 'users/coins_user.html', locals())
+
+
+@saccouser_required
+def user_sacco(request, username):
+    return render(request, 'users/sacco_user.html', locals())
+
+
+@saccouser_required
+def user_sacco_deposit(request, username):
+    return render(request, 'users/deposit_sacco_user.html', locals())
+
+
+@saccouser_required
+def user_sacco_withdraw(request, username):
+    return render(request, 'users/withdraw_sacco_user.html', locals())
+
+
+@coinsuser_required
+def user_coins_deposit(request, username):
+    return render(request, 'users/deposit_coins_user.html', locals())
+
+
+@coinsuser_required
+def user_coins_exchange(request, username):
+    available_coins = Coins.objects.filter(user=None).count()
+    coin_offers = Coins.objects.filter(~Q(user=request.user) & ~Q(user=None))
+    coin_requests = CoinRequests.objects.filter(~Q(user=request.user) & ~Q(user=None))
+    return render(request, 'users/exchange_coins_user.html', locals())
+
+
+@coinsuser_required
+def user_coins_withdraw(request, username):
+    return render(request, 'users/withdraw_coins_user.html', locals())
+
+
+def admin_generate_coins(request):
+    if request.method == 'POST':
+        number = request.POST.get("number")
+        data = {}
+        for i in range(1, int(number) + 1):
+            coin = Coins.objects.create()
+            data[coin.id] = coin.uuid
+        data["available_coins"] = Coins.objects.filter(user=None).count()
+        data["coins_in_circulation"] = Coins.objects.filter(~Q(user=None)).count()
+        return JsonResponse(data)
+
+
+def user_buy_system_coins(request):
+    if request.method == 'POST':
+        coins = request.POST.get("number")
+        phone_number = request.POST.get("phone_number")
+    return JsonResponse(buy_coins_from_admin(request.user, coins, phone_number))
+
+
+def user_make_coin_offer(request):
+    if request.method == 'POST':
+        data = {}
+        coins = request.POST.get("number")
+        if CoinOffers.objects.filter(user=request.user).count() == 0:
+            if int(coins) <= Coins.objects.filter(user=request.user).count():
+                offer = CoinOffers.objects.create(user=request.user,coin_amount = int(coins))
+                offer.save()
+                data['offeree'] = offer.user.username
+                data['amount'] = coins + ' Coins'
+                data['success'] = "You have placed an offer of " + coins + " Coins"
+                print(data)
+                return JsonResponse(data)
+            else:
+                data['fail'] = "You don't have enough unoffered coins to offer " + coins + " Coins. Try a lower amount"
+                print(data)
+                return JsonResponse(data)
+        else:
+            my_offered_coins = []
+            my_offers = CoinOffers.objects.filter(user=request.user)
+            for offer in my_offers:
+                my_offered_coins.append(offer.coin_amount)
+            if sum(my_offered_coins) > Coins.objects.filter(user=request.user).count():
+                data['fail'] = "You don't have enough unoffered coins to offer " + coins + " Coins. Try a lower amount"
+                print(data)
+                print(my_offered_coins)
+                print(Coins.objects.filter(user=request.user).count())
+                return JsonResponse(data)
+            else:
+                offer = CoinOffers.objects.create(user=request.user, coin_amount=int(coins))
+                offer.save()
+                data['offeree'] = offer.user.username
+                data['amount'] = coins + ' Coins'
+                data['success'] = "You have placed an offer of " + coins + " Coins"
+                return JsonResponse(data)
+
+
+def user_make_coin_request(request):
+    if request.method == 'POST':
+        data = {}
+        coins = request.POST.get("number")
+        req = CoinRequests.objects.create(user=request.user,coin_amount = int(coins))
+        req.save()
+        data['requestee'] = req.user.username
+        data['amount'] = coins + ' Coins'
     return JsonResponse(data)

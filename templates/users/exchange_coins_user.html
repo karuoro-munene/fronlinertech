@@ -1,0 +1,399 @@
+{%extends 'users/coins_base.html'%}
+{%load static%}
+{%load humanize%}
+
+{%block styles%}
+{%endblock styles%}
+
+{%block content%}
+<main>
+    <div class="container-fluid px-4">
+
+        <h5 class="mt-4" id="exchange_buy_coins">Buy Coins</h5>
+        <div id="alerts"></div>
+        <div class="row pt-1">
+            <div class="col-xl-12 col-md-12">
+                <div class="bg-white rounded p-1 px-3">
+                    <p class="pb-0 font-weight-bold text-primary pt-2">System Coins</p>
+                    <hr class="p-0">
+                    <div class="row">
+                        <div class="col-6">
+                            <p><i class="fas fa-coins text-primary" id="available_system_coins"></i> Available Coins: {{available_coins}}</p>
+                        </div>
+                        <div class="col-6  d-flex flex-row-reverse">
+                            <button class="btn btn-primary btn-sm" type="button" style="height:30px;width:100px"
+                                    data-toggle="modal" data-target="#buy_from_system_modal">Buy
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2 pt-1">
+            <div class="col-xl-12 col-md-12">
+                <div class="bg-white rounded px-3 pb-3">
+                    <p class="pb-0 font-weight-bold text-primary pt-2">Users Coins <small class="text-muted"> &nbsp;&nbsp;&nbsp;(
+                        {{coin_offers.count}} Users selling )</small></p>
+
+                    <hr class="p-0">
+                    {% if coin_offers.count >= 1 %}
+                    {%for offer in coin_offers|slice:"4"%}
+                    <div class="row">
+                        <div class="col-6">
+                            <p> {{offer.amount}} <i class="fas fa-coins text-primary"></i> from {{offer.user}}</p>
+                        </div>
+                        <div class="col-6  d-flex flex-row-reverse">
+                            <button class="btn btn-primary btn-sm" style="height:30px;width:100px">Buy</button>
+                        </div>
+                    </div>
+                    {%endfor%}
+                    {% else %}
+                    <div class="row">
+                        <div class="col-12  text-center">
+                            <p class="p-0"><i class="far fa-lg fa-frown text-primary"></i></p> <p><small>There are no offers yet</small></p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if coin_offers > 4 %}
+                    <div class="row">
+                        <div class="col-12  d-flex justify-content-center">
+                            <button class="btn btn-primary btn-sm" style="height:30px;width:160px">View all offers <i
+                                    class="fas fa-external-link-alt"></i></button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2 pt-1">
+            <div class="col-xl-12 col-md-12">
+                <div class="bg-white rounded p-1 px-3">
+                    <p class="pb-0 font-weight-bold text-primary pt-2">Request Coins from Users</p>
+                    <hr class="p-0">
+                    <small class="">You can also make a custom request for coins from other Tech Tackk users by clicking
+                        the
+                        button below</small>
+                    <div class="row pb-2 pt-2">
+                        <div class="col-12  d-flex justify-content-center">
+                            <button class="btn btn-primary btn-sm" style="height:30px;width:160px" data-toggle="modal" data-target="#request_coins_modal">Request Coins <i
+                                    class="fas fa-hand-holding-usd"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mt-4" id="exchange_sell_coins">Sell Coins</h5>
+        <div class="row pt-1">
+            <div class="col-xl-12 col-md-12">
+                <div class="bg-white rounded p-1 px-3">
+                    <p class="pb-0 font-weight-bold text-primary pt-2">Sell to users <small class="text-muted"> &nbsp;&nbsp;&nbsp;(
+                        {{coin_requests.count}} Users buying )</small></p>
+                    <hr class="p-0">
+                    {% if coin_requests.count >= 1 %}
+                    {%for req in coin_requests|slice:"4"%}
+                    <div class="row">
+                        <div class="col-6">
+                            <p>{{req.user}} requests {{req.amount}} <i class="fas fa-coins text-primary"></i></p>
+                        </div>
+                        <div class="col-6  d-flex flex-row-reverse">
+                            <button class="btn btn-primary btn-sm" style="height:30px;width:100px">Sell</button>
+                        </div>
+                    </div>
+                    {%endfor%}
+                    {%else%}
+                    <div class="row pb-3">
+                        <div class="col-12  text-center">
+                            <p class="p-0"><i class="far fa-lg fa-frown text-primary"></i></p> <p><small>There are no requests yet</small></p>
+                        </div>
+                    </div>
+                    {%endif%}
+                    {%if coin_requests.count > 4 %}
+                    <div class="row pb-3">
+                        <div class="col-12  d-flex justify-content-center">
+                            <button class="btn btn-primary btn-sm" style="height:30px;width:160px">View all requests <i
+                                    class="fas fa-external-link-alt"></i></button>
+                        </div>
+                    </div>
+                    {%endif%}
+
+
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2 pt-1 mb-4">
+            <div class="col-xl-12 col-md-12">
+                <div class="bg-white rounded p-1 px-3">
+                    <p class="pb-0 font-weight-bold text-primary pt-2">Make an Offer to Users</p>
+                    <hr class="p-0">
+                    <small class="">You can also make a custom offer to sell your coins to other Tech Tackk users by
+                        clicking
+                        the button below</small>
+                    <div class="row pb-2 pt-2">
+                        <div class="col-12  d-flex justify-content-center">
+                            <button class="btn btn-primary btn-sm" style="height:30px;width:160px" data-toggle="modal" data-target="#offer_coins_modal">Make an Offer <i
+                                    class="fas fa-handshake"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Buy from System Modal -->
+<div class="modal fade" id="buy_from_system_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="exampleModalLongTitle">Buy System Coins</h6>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <small class="pb-2">Number of coins &nbsp;<span id="coins_error" class="text-danger"></span></small>
+                    <input id="id_admin_coins_number" class="form-control form-control-round" type="number"
+                           placeholder="" required autofocus>
+
+                </div>
+                <div class="form-group mt-3">
+                    <small class="pb-2">Mpesa phone number <span class="text-muted">( 07xxxxxxxx )</span> <span id="phonenumber_error" class="text-danger"></span></small>
+                    <input id="id_mpesa_phonenumber" class="form-control form-control-round" type="number"
+                           placeholder="" required>
+
+                </div>
+                <div class="form-group mt-3">
+                    <small class="pb-2">Amount charged <span class="text-muted">( Automatic )</span></small>
+                    <input id="id_mpesa_coins_amount" class="form-control form-control-round" type="number"
+                           hidden>
+                    <span class="form-control" id="mpesa_amount_text" style="height:40px"></span>
+
+                </div>
+                <div class="row">
+                    <div class="col-8 d-flex flex-row mt-3">
+                        <img src="{%static 'images/mpesa.png'%}" style="width:50px"> &nbsp;<small class="pt-3"
+                                                                                                  style="font-size:11px!important">Powered
+                        by Mpesa.</small>
+
+                    </div>
+                    <div class=" col-4 d-flex flex-row-reverse mt-3 pt-2">
+                        <button class="btn btn-primary btn-sm" type="button" style="height:30px;width:100px"
+                                id="id_buy_system_coins">
+                            Buy
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Request Coins Modal -->
+<div class="modal fade" id="request_coins_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" >Coins Custom Request</h6>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <small class="pb-2">Number of coins &nbsp;<span id="request_coins_error" class="text-danger"></span></small>
+                    <input id="id_request_coins_number" class="form-control form-control-round" type="number"
+                           placeholder="" required autofocus>
+
+                </div>
+
+                <div class="row">
+                    <div class=" col-12 d-flex flex-row-reverse mt-3 ">
+                        <button class="btn btn-primary btn-sm" type="button" style="height:30px;width:100px"
+                                id="id_request_coins">
+                            Request
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Offer Coins Modal -->
+<div class="modal fade" id="offer_coins_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" >Coins Custom Offer</h6>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <small class="pb-2">Number of coins &nbsp;<span id="offer_coins_error" class="text-danger"></span></small>
+                    <input id="id_offer_coins_number" class="form-control form-control-round" type="number"
+                           placeholder="" required autofocus>
+
+                </div>
+
+                <div class="row">
+                    <div class=" col-12 d-flex flex-row-reverse mt-3 ">
+                        <button class="btn btn-primary btn-sm" type="button" style="height:30px;width:100px"
+                                id="id_offer_coins">
+                            Place Offer
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{%endblock content%}
+
+{%block scripts%}
+<script>
+$( "#offer_coins_modal" ).on('shown', function(){
+    $( "#id_offer_coins_number" ).focus();
+});
+$( "#code" ).on('shown', function(){
+    $( "#id_request_coins_number" ).focus();
+});
+$( "#request_coins_modal" ).on('shown', function(){
+    $( "#id_admin_coins_number" ).focus();
+});
+$( "#id_admin_coins_number" ).change(function() {
+    var coins = $( "#id_admin_coins_number" ).val();
+    var amount = coins*5;
+    $( "#id_admin_coins_amount" ).val(amount);
+    $( "#mpesa_amount_text" ).html(amount);
+});
+
+function validateSafaricom($number){
+          var safaricomReg = /(^0)((7(([0-2]{1}[0-9]{1})|([9]{1}[0-9]{1})|([4]{1}[0-3]{1})|([4]{1}[5-6]{1})|([4]{1}[8]{1})|([5]{1}[7-9]{1})|([6]{1}[8-9]{1})))|(1([1]{1}[0-9]{1})))[0-9]{6}$/;
+          return safaricomReg.test($number);
+        }
+
+$( "#id_buy_system_coins" ).click(function() {
+    var number = $( "#id_admin_coins_number" ).val();
+    var phone_number = $( "#id_mpesa_phonenumber" ).val();
+
+    if (number != "" && validateSafaricom(phone_number)) {
+        var amount = $( "#id_admin_coins_amount" ).val();
+        $( "#coins_error" ).html("");
+        $( "#phonenumber_error" ).html("");
+        $( "#buy_from_system_modal" ).modal('hide');
+        $('<div class="alert alert-success" role="alert">request to sent to admin!</div>').insertBefore('#alerts').delay(5000).fadeOut();
+
+        $.ajax({
+            method: 'POST',
+            url: '/ajax/user_buy_system_coins/',
+            data: {
+                number: number,
+                amount: amount,
+                phone_number: phone_number,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+            dataType: 'json',
+            success: function (data) {
+                $( "#id_admin_coins_number" ).val("");
+                $( "#id_mpesa_phonenumber" ).val("");
+                $( "#id_admin_coins_amount" ).val("");
+                $( "#mpesa_amount_text" ).html("");
+                if (data) {
+                    console.log(data);
+                    $('<div class="alert alert-success" role="alert">You bought the coins!</div>').insertBefore('#alerts').delay(10000).fadeOut();
+                    $( "#available_system_coins" ).html("Available Coins: {{available_coins}}")
+
+                }
+            }
+        });
+
+    } else if (number == "" && validateSafaricom(phone_number)){
+        $( "#coins_error" ).html("*required")
+        $( "#phonenumber_error" ).html("")
+    } else if (number != "" && !validateSafaricom(phone_number)){
+        $( "#coins_error" ).html("")
+        $( "#phonenumber_error" ).html("*invalid!")
+    } else if (number != "" && validateSafaricom(phone_number)){
+        $( "#coins_error" ).html("")
+        $( "#phonenumber_error" ).html("")
+    } else if (number == "" && !validateSafaricom(phone_number)){
+        $( "#coins_error" ).html("*required")
+        $( "#phonenumber_error" ).html("*invalid")
+    }
+
+
+});
+$( "#id_request_coins" ).click(function() {
+    var number = $("#id_request_coins_number").val();
+    if (number != ""){
+        $( "#request_coins_error" ).html("");
+        $( "#request_coins_modal" ).modal('hide');
+        $.ajax({
+            method: 'POST',
+            url: '/ajax/user_make_coin_request/',
+            data: {
+                number: number,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+            dataType: 'json',
+            success: function (data) {
+                if (data) {
+                    console.log(data);
+                    window.scrollTo(0, 0);
+                    $('<div class="alert alert-success" role="alert">You placed a request!</div>').insertBefore('#alerts').delay(10000).fadeOut();
+                }
+            }
+        });
+
+    }else{
+        $( "#request_coins_error" ).html("*enter a number");
+    }
+
+});
+$( "#id_offer_coins" ).click(function() {
+    var number = $("#id_offer_coins_number").val();
+    if (number != ""){
+        $( "#offer_coins_error" ).html("");
+        $( "#offer_coins_modal" ).modal('hide');
+        $.ajax({
+            method: 'POST',
+            url: '/ajax/user_make_coin_offer/',
+            data: {
+                number: number,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+            dataType: 'json',
+            success: function (data) {
+                if (data["success"]) {
+                    console.log(data);
+                    window.scrollTo(0, 0);
+                    $(`<div class="alert alert-success" role="alert"> ${data["success"]} </div>`).insertBefore('#alerts').delay(10000).fadeOut();
+                }else {
+                var fail = data["fail"]
+                    window.scrollTo(0, 0);
+                    $(`<div class="alert alert-danger" role="alert"> ${data["fail"]} </div>`).insertBefore('#alerts').delay(10000).fadeOut();
+                }
+            }
+        });
+
+    }else{
+        $( "#offer_coins_error" ).html("*enter a number");
+    }
+
+});
+</script>
+
+{%endblock scripts%}

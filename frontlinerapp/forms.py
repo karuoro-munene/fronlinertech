@@ -7,6 +7,7 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=64)
     username = forms.CharField(max_length=32)
     country = forms.CharField(max_length=100)
+    program = forms.CharField(max_length=100)
     phonenumber = forms.CharField(max_length=100)
     password1=forms.CharField()
     password2=forms.CharField()

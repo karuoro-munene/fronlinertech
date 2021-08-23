@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -8,6 +9,7 @@ from django.core.cache import cache
 import datetime
 from pinax.referrals.models import Referral
 from frontlinerapi import settings
+import uuid
 
 
 USER_TRANSACTION_TYPES = [
@@ -32,13 +34,22 @@ SYSTEM_TRANSACTION_TYPES = [
 ]
 
 
+class User(models.Model):
+    username = models.CharField(max_length=100,blank=True,null=True)
+
+    def __str__(self):
+        return self.username
+
+
 class CustomUser(AbstractUser):
     email = models.EmailField(null=True, blank=True)
-    country = models.CharField(max_length=100,blank=True,null=True)
+    country = models.CharField(max_length=100)
+    program = models.CharField(max_length=100)
     phonenumber = models.CharField(max_length=100,blank=True,null=True)
     is_regularuser = models.BooleanField(default=False)
     is_adminuser = models.BooleanField(default=False)
     first_time_login = models.BooleanField(default=True)
+    paid_for_signup = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
@@ -61,9 +72,10 @@ class CustomUser(AbstractUser):
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     referral = models.OneToOneField(Referral, on_delete=models.CASCADE, null=True)
-    one_level_up_user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='one_level_up_user', null=True)
-    two_levels_up_user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='two_levels_up_user', null=True)
-    three_levels_up_user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='three_levels_up_user', null=True)
+    one_level_up_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='one_level_up_user', null=True)
+    two_levels_up_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='two_levels_up_user', null=True)
+    three_levels_up_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='three_levels_up_user', null=True)
+    tree_quota = models.IntegerField(null=True)
 
 
 @receiver(post_save, sender=CustomUser)
@@ -117,6 +129,7 @@ class UserWallet(models.Model):
 class SystemWallet(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     total_balance = models.IntegerField(null=True)
+    initial_level_earnings = models.IntegerField(null=True)
     level_one_earnings = models.IntegerField(null=True)
     level_two_earnings = models.IntegerField(null=True)
     level_three_earnings = models.IntegerField(null=True)
@@ -137,3 +150,49 @@ class SystemTransactions(models.Model):
     amount = models.IntegerField(null=True)
     type = models.CharField(max_length=10,choices=SYSTEM_TRANSACTION_TYPES,null=True)
     created_at = models.DateTimeField(default=timezone.now)
+
+
+class UserReferees(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    level1 = ArrayField( models.CharField(max_length=50, blank=True), null=True)
+    level2 = ArrayField( models.CharField(max_length=50, blank=True), null=True)
+    level3 = ArrayField( models.CharField(max_length=50, blank=True), null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+
+@receiver(post_save, sender=CustomUser)
+def create_user_referees(sender, instance, created, **kwargs):
+    if created:
+        referees = UserReferees.objects.create(user=instance)
+        referees.save()
+
+
+class Coins(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey(CustomUser, blank=True, on_delete=models.CASCADE, null=True)
+    user_coins = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.uuid
+
+
+class CoinRequests(models.Model):
+    user = models.ForeignKey(CustomUser, blank=True, on_delete=models.CASCADE, null=True)
+    coin_amount = models.IntegerField(null=False)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.user
+
+
+class CoinOffers(models.Model):
+    user = models.ForeignKey(CustomUser, blank=True, on_delete=models.CASCADE, null=True)
+    coin_amount = models.IntegerField(null=False)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.user
+
+

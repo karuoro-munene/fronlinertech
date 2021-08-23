@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 
 ]
 
-SITE_ID = 3
+SITE_ID = 12
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

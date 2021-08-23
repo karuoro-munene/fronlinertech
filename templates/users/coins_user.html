@@ -1,0 +1,93 @@
+{%extends 'users/coins_base.html'%}
+{%load static%}
+{%load humanize%}
+{%block styles%}
+<style>
+    color1{
+        background-color:#5ded95!important;
+    }
+    color2{
+        background-color:#77d68d!important;
+        }
+    color3{
+        background-color:#90bf84!important;
+        }
+    color4{
+        background-color:#aaa87c!important;
+        }
+    color5{
+        background-color:#c39274!important;
+        }
+    color6{
+        background-color:#dd7b6b!important;
+        }
+    color7{
+        background-color:#f66463!important;
+        }
+    .action-grid {
+
+        }
+
+</style>
+
+{%endblock styles%}
+{%block content%}
+<main>
+    <div class="container-fluid px-4">
+        <h5 class="mt-4 pb-4 text-primary">Coins Dashboard</h5>
+        <div class="row mx-auto" id="alerts">
+        </div>
+        <div class="row pt-4">
+            <div class="col-xl-12 col-md-12">
+                <div class="color1 card  text-black mb-4 border-primary" style="font-weight:bold">
+                    <div class="card-header border-primary text-primary"><i class="fas fa-coins"></i> &nbsp; Coins
+                    <span style="float:right;font-weight:normal">You have <span style="font-weight:bold">{{my_coins.count}}</span> coins</span>
+                    </div>
+                    <div class="card-body"  style="font-weight:bold">
+                        <div class="row text-center">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="pb-2"><a type="button" href="{% url 'user_coins_exchange' request.user.username%}#exchange_buy_coins" class="btn text-white btn-primary btn-sm btn-block"style="width:150px"
+                                    ><i class="fa fa-arrow-down"></i> Buy Coins</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="pb-2"><a type="button" href="{% url 'user_coins_exchange' request.user.username%}#exchange_sell_coins" class="btn text-white btn-primary btn-sm btn-block" style="width:150px"
+                                    ><i class="fa fa-arrow-up"></i> Sell Coins</a></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row pt-3">
+            <div class="col-xl-6 col-md-6">
+                <div class="color1 card  text-white mb-4" style="background-color:#F34F51!important">
+                    <div class="card-body"  style="font-weight:bold">Total Earnings (Ksh) <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                        <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-md-6">
+                <div class="card text-white mb-4" style="background-color:#F34F51!important">
+                    <div class="card-body" style="font-weight:bold">Direct Earnings (Ksh) <span style="float:right;"></span><img style="width:50px;float:right" src="{% static 'users/moneyicons/money1.png'%}">
+                    <p>&nbsp;</p>
+                    </div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="#">View Details</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{%endblock content%}
+{%block scripts%}
+{%endblock scripts%}

@@ -40,7 +40,18 @@
                               <option value="Kenya">Kenya</option>
                               <option value="Tanzania">Tanzania</option>
                             </select>
-                            <input type="hidden" value="" name="country" id="id_country">
+                            <input type="hidden" name="country" id="id_country">
+                        </div>
+                        <div class="form-group">
+                            <div class="red"><small id="program_error"></small></div>
+                            <label for="program_select"><i class="fas fa-th-list"></i></label>
+                            <select class="program" id="program_select" name="program_select">
+                              <option selected class="select_program">Select your Program</option>
+                              <option value="Affiliate">Affiliate</option>
+                              <option value="Coins">Coins</option>
+                              <option value="Sacco">Sacco</option>
+                            </select>
+                            <input type="hidden" name="program" id="id_program">
                         </div>
                         <div class="form-group">
                             <div class="red"><small id="password1_error"></small></div>
@@ -179,6 +190,19 @@ var is_checked = $('#agree-term').is(":checked");
     if (is_checked){
         $("#terms_error").html("");
     }
+
+function CheckProgramAndSubmit() {
+        var program_selected = $('select[name=program_select] option').filter(':selected').val();
+            if (program_selected == 'Affiliate' || program_selected == 'Coins' || program_selected == 'Sacco'){
+                   $( "#id_program" ).val(program_selected);
+                   $( "#register-form" ).submit();
+                  }
+            else {
+                   $('#program_error').html("Select a program first!");
+                   event.preventDefault()
+            }
+    }
+
 $( "#register-form" ).submit(function( event ) {
     var country_selected = $('select[name=country_select] option').filter(':selected').val();
     var is_checked = $('#agree-term').is(":checked");
@@ -186,8 +210,8 @@ $( "#register-form" ).submit(function( event ) {
         $("#terms_error").html("");
         if (country_selected == 'Kenya' || country_selected == 'Tanzania'){
                $( "#id_country" ).val(country_selected);
-               $( "#register-form" ).submit();
-            }
+               CheckProgramAndSubmit();
+              }
         else {
                $('#country_error').html("Select a country first!");
                event.preventDefault()
@@ -198,5 +222,8 @@ $( "#register-form" ).submit(function( event ) {
         event.preventDefault();
     }
 });
+</script>
+<script>
+
 </script>
 {%endblock scripts%}
